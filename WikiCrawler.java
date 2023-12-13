@@ -12,8 +12,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
-public class WikiCrawler {
 
+public class WikiCrawler {
     String seedUrl;
     String[] keywords;
     int max;
@@ -60,7 +60,6 @@ public class WikiCrawler {
 
         writer.close();
     }
-
 
     public boolean isInRobots(String endpoint) throws IOException {
         URL url = new URL("https://en.wikipedia.org/robots.txt");
