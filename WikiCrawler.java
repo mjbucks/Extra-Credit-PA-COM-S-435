@@ -13,7 +13,12 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
+import java.util.*;
+
 public class WikiCrawler {
+
+    private static final String BASE_URL = "https://en.wikipedia.org";
+    private static final String ROBOTS_TXT_URL = "https://en.wikipedia.org/robots.txt";
     String seedUrl;
     String[] keywords;
     int max;
@@ -50,7 +55,47 @@ public class WikiCrawler {
         writeGraphToFile(visited);
     }
 
-    private void writeGraphToFile(Set<String> visited) throws IOException {
+
+    public void crawlMax(String seedUrl, int max, String fileName) throws IOException {
+        final int MAX_REQUESTS = 10;
+        int requests = 0;
+        Set<String> visited = new HashSet<>();
+        Queue<String> toVisit = new LinkedList<>();
+        List<String[]> edges = new ArrayList<>();
+        toVisit.add(seedUrl);
+
+        while (!toVisit.isEmpty() && visited.size() < max) {
+            String currentUrl = toVisit.poll();
+            if (!visited.contains(currentUrl) && !isInRobots(currentUrl)) {
+                visited.add(currentUrl);
+                Document doc = Jsoup.connect(BASE_URL + currentUrl).get();
+                Elements links = doc.select("a[href]");
+                links.stream().map(link -> link.attr("href"))
+                        .filter(link -> link.startsWith("/wiki/") && !link.contains("#") && !link.contains(":"))
+                        .forEach(link -> {
+                            try {
+                                if (!isInRobots(link)) {
+                                    toVisit.add(link);
+                                    edges.add(new String[]{currentUrl, link});
+                                }
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                // Politeness policy
+                if (++requests % MAX_REQUESTS == 0) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+        }
+        writeGraphToFile(edges);
+    }
+
+    private void writeGraphToFile(List<String> visited) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter("graph.txt"));
         writer.write(visited.size() + "\n");
 
@@ -62,7 +107,7 @@ public class WikiCrawler {
     }
 
     public boolean isInRobots(String endpoint) throws IOException {
-        URL url = new URL("https://en.wikipedia.org/robots.txt");
+        URL url = new URL(ROBOTS_TXT_URL);
         BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
         String line;
 
