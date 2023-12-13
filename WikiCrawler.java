@@ -18,40 +18,64 @@ public class WikiCrawler {
     String[] keywords;
     int max;
     String fileName;
+    String baseUrl;
 
     public WikiCrawler(String seedUrl, String[] keywords, int max, String fileName) {
         this.seedUrl = seedUrl;
         this.keywords = keywords;
         this.max = max;
         this.fileName = fileName;
-
+        baseUrl = "https://en.wikipedia.org";
     }
 
     public void crawl() throws IOException {
         Queue<String> queue = new LinkedList<>();
         Set<String> visited = new HashSet<>();
-        queue.add(seedUrl);
+        queue.add(baseUrl + seedUrl);
+        int requestCount = 0;
 
         while (!queue.isEmpty() && visited.size() < max) {
             String url = queue.poll();
+            requestCount++;
+
+            System.out.println(url);
+            if (isInRobots(url)) {
+                continue;
+            }
+
             visited.add(url);
-            Document doc = (Document) Jsoup.connect(url).get();
+            Document doc = Jsoup.connect(url).get();
             Elements links = doc.select("p a[href]");
 
             for (Element link : links) {
                 String absUrl = link.attr("abs:href");
-                if (!visited.contains(absUrl) && absUrl.startsWith("https://en.wikipedia.org")) {
+                if (absUrl.indexOf(":", 7) != -1 || absUrl.contains("#")) {
+                    continue;
+                }
+                if (!visited.contains(absUrl) && absUrl.startsWith(baseUrl)) {
                     queue.add(absUrl);
                 }
             }
 
+            if (requestCount % 10 == 0) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         writeGraphToFile(visited);
     }
 
     private void writeGraphToFile(Set<String> visited) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter("graph.txt"));
+        File file = new File("graph.txt");
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         writer.write(visited.size() + "\n");
 
         for (String url : visited) {
@@ -61,15 +85,16 @@ public class WikiCrawler {
         writer.close();
     }
 
-    public boolean isInRobots(String endpoint) throws IOException {
-        URL url = new URL("https://en.wikipedia.org/robots.txt");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+    public boolean isInRobots(String url) throws IOException {
+        URL robotsUrl = new URL("https://en.wikipedia.org/robots.txt");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(robotsUrl.openStream()));
         String line;
+        String endpoint = new URL(url).getPath();
 
         while ((line = reader.readLine()) != null) {
             if (line.startsWith("Disallow:")) {
                 String disallowedPage = line.substring("Disallow:".length()).trim();
-                if (endpoint.startsWith(disallowedPage)) {
+                if (endpoint.equals(disallowedPage)) {
                     reader.close();
                     return true;
                 }
@@ -79,5 +104,4 @@ public class WikiCrawler {
         reader.close();
         return false;
     }
-
 }
