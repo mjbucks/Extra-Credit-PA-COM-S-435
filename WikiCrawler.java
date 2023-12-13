@@ -35,7 +35,7 @@ public class WikiCrawler {
 
         queue.add(seedUrl);
 
-        while (!queue.isEmpty() && visited.size() < maxPages) {
+        while (!queue.isEmpty() && visited.size() < max) {
             String url = queue.poll();
             visited.add(url);
 
