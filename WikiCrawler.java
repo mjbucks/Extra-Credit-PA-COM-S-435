@@ -6,9 +6,8 @@ import org.jsoup.select.*;
 import javax.lang.model.element.Element;
 import javax.lang.model.util.Elements;
 import javax.swing.text.Document;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -39,7 +38,7 @@ public class WikiCrawler {
             String url = queue.poll();
             visited.add(url);
 
-            Document doc = Jsoup.connect(url).get();
+            Document doc = (Document) Jsoup.connect(url).get();
             Elements links = doc.select("p a[href]");
 
             for (Element link : links) {
@@ -69,6 +68,24 @@ public class WikiCrawler {
     public static void main(String[] args) throws IOException {
         WikiCrawler crawler = new WikiCrawler("https://en.wikipedia.org/wiki/Main_Page", 100);[^1^][1]
         crawler.crawl();
+    }
+
+    public boolean isInRobots(String endpoint) throws IOException {
+        URL url = new URL("https://en.wikipedia.org/robots.txt");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (line.startsWith("Disallow:")) {
+                String disallowedPage = line.substring("Disallow:".length()).trim();
+                if (endpoint.startsWith(disallowedPage)) {
+                    reader.close();
+                    return true;
+                }
+            }
+        }
+        reader.close();
+        return false;
     }
 
 }
