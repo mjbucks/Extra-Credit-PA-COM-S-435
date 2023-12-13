@@ -3,13 +3,18 @@
 import java.io.IOException;
 
 public class Main {
+    public Main() {
+    }
+
     public static void main(String[] args) {
-        String[] topics = {"tennis", "grand slam"};
+        String[] topics = new String[]{"tennis", "grand slam"};
         WikiCrawler w = new WikiCrawler("/wiki/Tennis", topics, 100, "WikiTennisGraph.txt");
+
         try {
             w.crawl();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException var4) {
+            var4.printStackTrace();
         }
+
     }
 }
