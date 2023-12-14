@@ -4,8 +4,8 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {
-        String[] topics = new String[]{"tennis", "grand slam"};
-        WikiCrawler w = new WikiCrawler("/wiki/Tennis", topics, 20, "WikiTennisGraph.txt");
+        String[] topics = new String[]{"tennis", "rafael"};
+        WikiCrawler w = new WikiCrawler("/wiki/Tennis", topics, 200, "WikiTennisGraph.txt");
 
         try {
             w.crawl();
