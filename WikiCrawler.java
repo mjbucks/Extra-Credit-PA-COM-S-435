@@ -36,7 +36,6 @@ public class WikiCrawler {
             String urlPath = tempURL.getPath();
             requestCount++;
 
-            System.out.println(url);
             if (isInRobots(url)) {
                 continue;
             }
@@ -63,7 +62,6 @@ public class WikiCrawler {
 
             if (requestCount % 10 == 0) {
                 try {
-//                    System.out.println("Waiting");
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -79,7 +77,6 @@ public class WikiCrawler {
         if (!file.exists()) {
             file.createNewFile();
         }
-
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         writer.write(visited.size() + "\n");
 
@@ -101,7 +98,6 @@ public class WikiCrawler {
                 String disallowedPage = line.substring("Disallow:".length()).trim();
                 if (endpoint.equals(disallowedPage)) {
                     reader.close();
-//                    System.out.println("In Robots");
                     return true;
                 }
             }
@@ -112,7 +108,6 @@ public class WikiCrawler {
     }
 
     public boolean isPageRelevant(String url){
-
         String pageTitle = url.split("/")[2].toLowerCase();
 
         for (int i = 0; i < keywords.length; i ++){
