@@ -5,10 +5,12 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) {
         String[] topics = new String[]{"tennis", "rafael"};
-        WikiCrawler w = new WikiCrawler("/wiki/Tennis", topics, 200, "WikiTennisGraph.txt");
-
+        WikiCrawler w1 = new WikiCrawler("/wiki/Tennis", topics, 200, "WikiTennisGraph.txt");
+        //Disallowed
+        WikiCrawler w2 = new WikiCrawler("/api/", topics, 100, "Disallowed");
         try {
-            w.crawl();
+            w1.crawl();
+            w2.crawl();
         } catch (IOException var4) {
             var4.printStackTrace();
         }

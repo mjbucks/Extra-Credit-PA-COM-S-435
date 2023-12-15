@@ -63,6 +63,7 @@ public class WikiCrawler {
 
             if (requestCount % 10 == 0) {
                 try {
+//                    System.out.println("Waiting");
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -100,6 +101,7 @@ public class WikiCrawler {
                 String disallowedPage = line.substring("Disallow:".length()).trim();
                 if (endpoint.equals(disallowedPage)) {
                     reader.close();
+//                    System.out.println("In Robots");
                     return true;
                 }
             }
