@@ -3,9 +3,6 @@
 import org.jsoup.*;
 import org.jsoup.nodes.*;
 import org.jsoup.select.*;
-//import javax.lang.model.element.Element;
-//import javax.lang.model.util.Elements;
-//import javax.swing.text.Document;
 import java.io.*;
 import java.net.URL;
 import java.util.HashSet;
