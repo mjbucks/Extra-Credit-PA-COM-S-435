@@ -5,10 +5,7 @@ import org.jsoup.nodes.*;
 import org.jsoup.select.*;
 import java.io.*;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public class WikiCrawler {
     String seedUrl;
@@ -27,7 +24,7 @@ public class WikiCrawler {
 
     public void crawl() throws IOException {
         Queue<String> queue = new LinkedList<>();
-        Set<String> visited = new HashSet<>();
+        Set<String> visited = new LinkedHashSet<>();
         Set<String> urlsWeveBeenOn = new HashSet<>();
         urlsWeveBeenOn.add(baseUrl+seedUrl);
         queue.add(baseUrl + seedUrl);
